@@ -1,0 +1,40 @@
+---
+description: React 与 TypeScript 编码规范
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# React 与 TypeScript 编码规范
+
+## 组件规范
+
+- 使用函数式组件，不使用 Class 组件
+- 页面入口组件以目录名命名（如 `SingleEntry`、`Entry`）
+- 复杂逻辑抽取为自定义 hooks（如 `useHandleForm`、`useQueryBaseInfo`）
+
+## 导入顺序
+
+1. 第三方库（React、antd、@ant-design/pro-components 等）
+2. 项目内部（@/api、@/components、@/util 等）
+3. 相对路径（./components、../store）
+
+## 类型定义
+
+- 优先使用 `interface` 定义 props 和数据结构
+- API 响应类型放在 `typings.d.ts` 或 `types/` 目录
+- 避免 `any`，必要时使用 `unknown` 或具体类型
+
+## 示例
+
+```tsx
+// ✅ 推荐：函数式组件 + 明确类型
+const SingleEntry: React.FC = () => {
+  useEffect(() => {
+    initSingleEntry();
+  }, []);
+  return <SingleEntryContent />;
+};
+
+// ✅ 推荐：自定义 hook 封装逻辑
+const { formRef, form, onValuesChange } = useHandleForm({ baseInfo });
+```

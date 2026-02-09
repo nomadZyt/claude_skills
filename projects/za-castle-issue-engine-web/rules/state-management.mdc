@@ -1,0 +1,50 @@
+---
+description: Zustand 状态管理规范
+globs: "**/store/**/*.ts"
+alwaysApply: false
+---
+
+# Zustand 状态管理规范
+
+## Store 创建方式
+
+使用 `@/utils/createStore` 创建 Store，而非直接使用 `zustand/create`。
+
+```typescript
+// ✅ 正确
+import { createStore } from "@/utils/createStore";
+
+export const useSingleEntryStore = createStore<StateType>((get, _set) => ({
+  ...defaultData,
+  setAccountList: (accountList) => get().setState({ accountList }),
+}));
+```
+
+## Store 结构约定
+
+- **init.ts**：初始化逻辑（如 `initSingleEntry`）
+- **interface.ts**：State 接口定义
+- **useStore.ts**：createStore 调用与导出
+
+## 状态更新
+
+- 通过 `get().setState({ ... })` 做部分更新
+- 可为常用更新封装 setter 方法（如 `setAccountList`）
+
+## 持久化
+
+需要持久化时传入 `isStorage`：
+
+```typescript
+createStore(() => ({ ... }), {
+  isStorage: { name: 'app-prefs' }
+});
+```
+
+## 消费方式
+
+```typescript
+// 按需订阅，避免整 store 订阅
+const accountList = useSingleEntryStore((state) => state.accountList);
+const setAccountList = useSingleEntryStore((state) => state.setAccountList);
+```

@@ -1,0 +1,41 @@
+---
+description: API 层编码规范
+globs: "**/api/**/*.ts"
+alwaysApply: false
+---
+
+# API 层编码规范
+
+## 请求封装
+
+- 使用 `@umijs/max` 的 `request` 方法
+- 接口 base 通过 `getHost()` 或 `getWxHost()` 动态拼接（见 `@/util/host`）
+
+## 目录与文件
+
+- 按业务域拆分：`base/`、`quote/`、`accountManagement/`、`policyList/`
+- 每个域：`index.ts`（请求方法）+ `typings.d.ts`（类型）
+
+## 响应类型
+
+- 统一使用 `request<API.IResponse>(...)`
+- 业务数据结构在 `typings.d.ts` 或 `types/*.d.ts` 中定义
+
+## 错误处理
+
+- 默认：`success === false` 时由 `errorConfig` 统一弹 message
+- 需保留原始响应时：传 `returnResponseOnError: true`
+
+```typescript
+// 示例
+return request<API.IResponse>(`${getHost()}/api/qx/insure/calculatePremium`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  returnResponseOnError: true,
+  data: params,
+});
+```
+
+## 请求头
+
+- `xwork-user-id` 由 `requestInterceptors` 自动注入，无需在接口中手动添加

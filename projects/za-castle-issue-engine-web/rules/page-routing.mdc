@@ -1,0 +1,33 @@
+---
+description: 页面跳转与路由规范
+globs: "**/pages/**/*.tsx"
+alwaysApply: false
+---
+
+# 页面跳转与路由规范
+
+## 路由跳转
+
+使用 Umi 的 `history` 进行编程式跳转：
+
+```typescript
+import { history } from '@umijs/max';
+
+history.push('/issueEngine/singleEntry');
+history.push('/issueEngine/batchEntry');
+history.push('/issueEngine/orderManagement');
+```
+
+## 路由路径
+
+- 录单入口：`/issueEngine/entry`
+- 单笔录单：`/issueEngine/singleEntry`
+- 批量录单：`/issueEngine/batchEntry`
+- 订单管理：`/issueEngine/orderManagement`
+- 报价结果：`/issueEngine/quoteResult`
+- 核保结果：`/issueEngine/auditResult`
+
+## 参数传递
+
+- 简单参数：使用 `query`，如 `history.push({ pathname: '/xxx', query: { id: '123' } })`
+- 复杂对象：考虑 Store 预存或 state 传递

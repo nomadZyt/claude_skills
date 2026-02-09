@@ -1,0 +1,80 @@
+---
+description: TS 编码标准与高级用法
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: true
+---
+
+# TS 编码标准
+
+编码时锻炼 TypeScript 能力。Agent 和 Tab 补全生成代码时，应遵循以下原则，帮助用户接触和掌握 TS 特性。
+
+## 原则
+
+1. **显式类型优先**：在函数参数、返回值、复杂变量处尽量写出类型，便于用户理解类型流动
+2. **避免 `any`**：用 `unknown`、泛型或具体类型替代，必要时加简短注释说明为何如此选择
+3. **善用工具类型**：在合适场景使用 `Pick`、`Partial`、`Record`、`ReturnType` 等，并加一行注释说明用途
+4. **泛型适度展开**：使用泛型时，在首次出现处用注释说明泛型参数含义（如 `T extends Record<string, unknown>` 表示「键值对对象」）
+
+## 示例
+
+```typescript
+// ✅ 显式类型，便于理解
+function formatDate(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+// ✅ 泛型 + 注释，帮助学习
+// T 表示列表项类型，保证 map 回调的 item 有正确类型
+function mapIds<T extends { id: string }>(items: T[]): string[] {
+  return items.map((item) => item.id);
+}
+
+// ✅ 工具类型 + 注释
+// Pick 从 User 中只取 id 和 name，减少冗余类型定义
+type UserSummary = Pick<User, 'id' | 'name'>;
+
+// ❌ 避免：隐式 any 或过度依赖推断
+const handler = (e) => {};  // e 无类型
+```
+
+## 注释尺度
+
+- 仅在「对学习有帮助」时加注释，不追求每行都注释
+- 注释用中文，简短（一行内），说明「是什么」或「为什么」
+- 涉及 `as` 断言时，必须注释说明为何需要断言及类型安全的依据
+
+## 高级用法使用时机
+
+### 工具类型
+
+| 用法 | 适用场景 |
+|-----|----------|
+| `Pick<T, K>` | 已有类型只需部分字段，如列表项只要 id、name |
+| `Omit<T, K>` | 已有类型排除部分字段，如提交时排除 id、createdAt |
+| `Partial<T>` | 所有字段可选，如更新接口、表单初始值、patch 请求体 |
+| `Required<T>` | 所有字段必填，如校验通过后的数据 |
+| `Record<K, V>` | 键值对映射，如枚举映射、配置对象 |
+| `ReturnType<F>` | 从函数推断返回值类型，如封装第三方 API、hooks 返回值 |
+
+### 泛型
+
+| 用法 | 适用场景 |
+|-----|----------|
+| `T extends Base` | 约束泛型必须满足某结构，如 `T extends { id: string }` |
+| 泛型函数 | 输入输出类型有关联，如 `mapIds<T>(items: T[])` |
+| 泛型组件 | 组件 props 与子组件/数据强关联，如表格列配置、表单控件封装 |
+
+### 其他
+
+| 用法 | 适用场景 |
+|-----|----------|
+| `unknown` | 来源不可信的数据，如 catch、JSON.parse 结果 |
+| `as const` | 字面量类型，避免被拓宽，如配置对象、枚举映射 |
+| 联合类型 `A \| B` | 多种可能形态，如状态机、不同接口返回结构 |
+| `infer` | 从复杂类型提取子类型，如自定义工具类型 |
+
+### 使用节奏
+
+1. 先打好基础：显式类型、interface、type 用熟
+2. 再上工具类型：Pick、Partial、Record 场景明确
+3. 最后泛型：封装 hooks、通用组件、工具函数时再上

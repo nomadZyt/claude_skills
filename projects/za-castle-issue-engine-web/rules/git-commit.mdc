@@ -1,0 +1,138 @@
+---
+description: Git 提交规范（Conventional Commits）— 指导 AI 生成高质量、有上下文的 commit 信息
+globs: "**/*"
+alwaysApply: true
+---
+
+# Git 提交规范
+
+项目使用 **Conventional Commits**，由 `@commitlint/config-conventional` 校验。
+
+## 格式
+
+```
+[可选的 emoji] <type>(<scope>): <subject>
+
+<body>
+```
+
+- **type**：必填，提交类型
+- **scope**：必填（除 docs/style/chore 外），影响的业务模块
+- **subject**：必填，一句话说清「做了什么」+「为了什么」（≤ 72 字符）
+- **body**：当变更涉及 ≥3 个文件或包含需要解释的决策时必须提供
+
+## 类型 (type)
+
+| 类型       | 说明     | 选型判断                                           |
+| ---------- | -------- | -------------------------------------------------- |
+| `feat`     | 新功能   | 用户可感知的新能力、新页面、新交互                 |
+| `fix`      | 修复 bug | 修复已有功能的错误行为                             |
+| `docs`     | 文档变更 | 仅文档/注释变更，不涉及代码逻辑                    |
+| `style`    | 代码格式 | 不影响逻辑的格式调整（空格、分号、import 排序）    |
+| `refactor` | 重构     | 不改变外部行为，优化内部结构（抽取组件、拆分函数） |
+| `perf`     | 性能优化 | 以提升性能为目的的改动（memo、懒加载、减少渲染）   |
+| `test`     | 测试相关 | 新增或修改测试用例                                 |
+| `chore`    | 工程化   | 构建、依赖、CI/CD、配置文件、开发工具              |
+
+## Scope 选取规则
+
+scope 应反映 **业务模块或功能域**，而非文件名：
+
+| 变更位置                     | scope                        | 说明        |
+| ---------------------------- | ---------------------------- | ----------- |
+| `src/pages/entry/`           | `entry`                      | 首页/工作台 |
+| `src/pages/singleEntry/`     | `singleEntry`                | 单笔录单    |
+| `src/pages/batchEntry/`      | `batchEntry`                 | 批量录单    |
+| `src/pages/orderManagement/` | `orderManagement`            | 订单管理    |
+| `src/api/quote/`             | `quote`                      | 报价模块    |
+| `src/api/base/`              | `base`                       | 基础数据    |
+| `src/api/notification/`      | `notification`               | 消息通知    |
+| `src/api/statistics/`        | `statistics`                 | 数据统计    |
+| `src/components/`            | `components`                 | 公共组件    |
+| `src/store/`                 | `store`                      | 全局状态    |
+| `config/`                    | `config`                     | 项目配置    |
+| 跨多个模块                   | 用最主要的模块，或省略 scope | —           |
+
+## AI 生成 Commit 信息的工作流
+
+### 第 1 步：分析变更内容
+
+在写 commit 信息前，必须通过 `git diff --staged` 或 `git diff` 理解：
+
+1. **改了哪些文件** — 判断 scope
+2. **改了什么逻辑** — 区分 feat/fix/refactor
+3. **为什么改** — 这是 commit 信息的核心价值
+
+### 第 2 步：撰写 subject
+
+subject 必须回答「**做了什么** + **业务目的**」，而不是简单描述文件操作。
+
+**反面示例（无价值）：**
+
+```
+feat(entry): 新增组件
+fix: 修复问题
+refactor: 重构代码
+chore: 更新配置
+feat(entry): 添加 CompletionTrendChart 组件和 MessageNotice 组件
+```
+
+**正面示例（有价值）：**
+
+```
+feat(entry): 工作台新增完成率趋势图和站内消息通知模块
+fix(quote): 修复商业险折扣系数未参与保费计算导致金额偏高
+refactor(singleEntry): 将车辆信息表单拆分为基础信息和扩展信息子组件，降低单文件复杂度
+perf(entry): 对报表图表组件使用懒加载，首屏加载时间减少约 40%
+chore(config): 代理配置新增 pre 环境地址，支持预发布环境联调
+```
+
+### 第 3 步：撰写 body（当需要时）
+
+body 用于补充 subject 无法覆盖的信息，使用以下结构：
+
+```
+<type>(<scope>): <subject>
+
+<变更说明 — 解释关键决策、实现方式或影响范围>
+
+- 要点 1
+- 要点 2
+```
+
+**Body 示例：**
+
+```
+feat(entry): 工作台新增数据趋势柱状图，支持按日/周/月维度切换
+
+基于 ECharts 实现柱状图组件，数据从 /api/statistics/trend 接口获取。
+支持三种时间维度切换，默认展示近 7 天数据。
+
+- 新增 DataTrendBarChart 组件及数据处理工具函数
+- 新增 statistics API 模块（接口定义 + 类型）
+- 图表容器高度自适应卡片布局
+```
+
+```
+fix(quote): 修复车损险保额为 0 时页面白屏
+
+原因：QuoteResult 组件直接用保额做除法计算费率，保额为 0 时触发 Infinity 导致渲染崩溃。
+修复：在计算前增加保额 > 0 的守卫判断，保额为 0 时展示「暂无报价」兜底 UI。
+```
+
+## Subject 撰写检查清单
+
+写完 subject 后用以下问题自检：
+
+- [ ] 读者仅看 subject 能否理解「改了什么功能」？（不能只说「新增组件」）
+- [ ] 是否包含业务语义？（「完成率趋势图」优于「chart 组件」）
+- [ ] 是否与其他 commit 可区分？（避免多个 commit 都叫「更新页面」）
+- [ ] 是否使用祈使句？（「新增」而非「新增了」）
+
+## 注意事项
+
+- 提交信息使用中文
+- subject 使用祈使句，如「新增」「修复」而非「新增了」「修复了」
+- 支持在 type 前加 emoji，commitlint 已配置解析
+- **禁止**在 subject 中罗列文件名或组件名代替功能描述
+- 多个不相关的改动应拆分为多次 commit，而非合并为一个大 commit

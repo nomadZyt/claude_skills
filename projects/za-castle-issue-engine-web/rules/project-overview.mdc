@@ -1,0 +1,47 @@
+---
+description: 项目核心约定、技术栈与目录结构
+alwaysApply: true
+---
+
+# za-castle-issue-engine-web 项目约定
+
+## 项目定位
+
+众安保险车险投保引擎 Web 端，B 端内部系统。可独立运行或作为 qiankun 微前端子应用接入。
+
+## 技术栈
+
+- **框架**：React 19 + TypeScript
+- **构建/路由**：Umi Max
+- **状态管理**：Zustand（通过 `@/utils/createStore` 创建）
+- **UI**：Ant Design 5 + @ant-design/pro-components
+- **样式**：Less + Tailwind CSS
+
+## 目录约定
+
+| 路径 | 职责 |
+|------|------|
+| `config/` | Umi 配置、路由、代理、请求错误处理 |
+| `src/api/` | 按业务域拆分（base、quote、accountManagement、policyList） |
+| `src/components/` | 公共组件 |
+| `src/pages/` | 页面，按路由对应 |
+| `src/store/` | 全局 Zustand |
+| `src/util/` | 工具函数（env、host、formateData 等） |
+| `src/utils/` | createStore、breadcrumb 等 |
+| `types/` | 全局类型声明 |
+
+## 路由基础路径
+
+- 生产 publicPath：`/issueEngine/dist/`
+- 路由前缀：`/issueEngine/`（如 `/issueEngine/entry`、`/issueEngine/singleEntry`）
+
+## 用户身份
+
+- 来源：URL 参数 `qxUserId` 或 `getXworkClientLoginUser()`
+- 存储：`sessionStorage['xwork-user-id']`
+- 请求：`requestInterceptors` 自动携带 `xwork-user-id` 请求头
+
+## 环境变量
+
+- `REACT_APP_ENV`：dev / test / pre（影响代理和 hostMap）
+- `NODE_ENV`：development / production
