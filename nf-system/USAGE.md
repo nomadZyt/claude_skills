@@ -260,10 +260,7 @@ NF-003: 修复登录页样式问题
 ---
 
 ## 📖 参考
-
-- 原作者：Manuel Schipper
-- 原文：https://schipper.ai/posts/parallel-coding-agents/
-- 开源脚本：https://gist.github.com/manuelschipper/149ebf6b2d150ccaccc84ee9a9df560f
+https://schipper.ai/posts/parallel-coding-agents/
 
 ---
 
