@@ -192,13 +192,6 @@ NF-001: 添加用户登录组件
 
 ---
 
-## 🙏 致谢
-- 借鉴
-  - 原作者：Manuel Schipper
-  - 原文：[How I run 4–8 parallel coding agents with tmux and Markdown specs](https://schipper.ai/posts/parallel-coding-agents/)
-
----
-
 ## 📄 License
 
 MIT License
