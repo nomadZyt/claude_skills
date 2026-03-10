@@ -1,7 +1,7 @@
 # 项目约定
 
 ## 技术栈
-{{TECH_STACK}}
+- Unknown
 
 ## Commit 规范
 - 格式：`NF-XXX: [动词] [描述]`
@@ -9,10 +9,13 @@
 - 动词用现在时：add, update, fix, refactor
 
 ## 代码规范
-{{CODE_STANDARDS}}
+- 遵循项目已有代码风格
+- 保持一致性
+- 添加必要的注释
 
 ## 测试
-{{TEST_STANDARDS}}
+- 测试框架：[待配置]
+- 运行测试：[待配置]
 
 ---
 
@@ -31,6 +34,7 @@
 - `/nf-verify` - 验证代码
 - `/nf-close` - 关闭并归档 NF
 - `/nf-deep` - 并行深度分析（复杂问题）
+- `/task-scheduler` - 多任务并发调度器（自动管理多个 NF）
 
 ### 文件位置
 - NF 索引：`docs/features/FEATURE_INDEX.md`
