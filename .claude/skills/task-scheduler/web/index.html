@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Scheduler Dashboard</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --orange: #db6d28;
+    --purple: #bc8cff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header h1 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .status-badge .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .status-running { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+  .status-running .dot { background: var(--green); }
+  .status-stopped { background: rgba(139, 148, 158, 0.15); color: var(--text-muted); }
+  .status-stopped .dot { background: var(--text-muted); }
+  .status-completed { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+  .status-completed .dot { background: var(--accent); }
+
+  .btn-refresh {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: border-color 0.15s;
+  }
+  .btn-refresh:hover { border-color: var(--accent); }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .stat-card .label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .stat-card .value {
+    font-size: 28px;
+    font-weight: 600;
+  }
+
+  /* Progress bar */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .progress-bar-bg {
+    width: 100%;
+    height: 10px;
+    background: var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    transition: width 0.4s ease;
+  }
+
+  /* Task list */
+  .task-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .task-count {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--border);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.15s;
+  }
+  .task-card:hover { border-color: var(--text-muted); }
+
+  .task-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .task-id {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .task-status-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .tag-running { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+  .tag-pending { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+  .tag-completed { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+  .tag-failed { background: rgba(248, 81, 73, 0.15); color: var(--red); }
+
+  .task-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .task-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .priority-high { color: var(--red); }
+  .priority-medium { color: var(--yellow); }
+  .priority-low { color: var(--text-muted); }
+
+  .workload-indicator {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .workload-indicator span {
+    width: 4px;
+    height: 12px;
+    border-radius: 2px;
+    background: var(--border);
+  }
+  .workload-indicator span.active { background: var(--accent); }
+
+  /* Agents section */
+  .agents-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .agent-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .agent-row:last-child { border-bottom: none; }
+
+  .agent-name {
+    font-weight: 500;
+    color: var(--purple);
+  }
+
+  .agent-task {
+    color: var(--text-muted);
+    flex: 1;
+    margin-left: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Time info */
+  .time-info {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+  }
+
+  .empty-state p { font-size: 14px; margin-top: 8px; }
+
+  /* Error state */
+  .error-banner {
+    background: rgba(248, 81, 73, 0.1);
+    border: 1px solid rgba(248, 81, 73, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    color: var(--red);
+    font-size: 14px;
+    display: none;
+  }
+
+  .connection-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .connection-status.connected {
+    background: rgba(63, 185, 80, 0.15);
+    color: var(--green);
+  }
+
+  .connection-status.disconnected {
+    background: rgba(139, 148, 158, 0.15);
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Task Scheduler Dashboard</h1>
+  <div class="header-right">
+    <span id="statusBadge" class="status-badge status-stopped">
+      <span class="dot"></span>
+      <span id="statusText">--</span>
+    </span>
+    <button class="btn-refresh" onclick="loadData()">Refresh</button>
+  </div>
+</div>
+
+<div id="errorBanner" class="error-banner"></div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="label">Total Tasks</div>
+    <div class="value" id="statTotal">--</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Running</div>
+    <div class="value" id="statRunning" style="color:var(--green)">--</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Completed</div>
+    <div class="value" id="statCompleted" style="color:var(--accent)">--</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Pending</div>
+    <div class="value" id="statPending" style="color:var(--yellow)">--</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Failed</div>
+    <div class="value" id="statFailed" style="color:var(--red)">--</div>
+  </div>
+</div>
+
+<div class="progress-section">
+  <div class="progress-header">
+    <span>Overall Progress</span>
+    <span id="progressText">0%</span>
+  </div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+  </div>
+</div>
+
+<div id="runningSection"></div>
+<div id="pendingSection"></div>
+<div id="completedSection"></div>
+<div id="failedSection"></div>
+
+<div id="agentsSection"></div>
+
+<div class="time-info" id="timeInfo"></div>
+
+<script>
+// WebSocket and auto-refresh configuration
+let websocket = null;
+let autoRefreshInterval = null;
+let useWebsocket = true; // Default to WebSocket, fall back to polling
+let refreshIntervalMs = 2000; // Polling interval when WebSocket is not available
+
+// Data paths to try in order (supports both local server and different serve roots)
+var DATA_PATHS = [
+  '../docs/tasks/scheduler-state.json',
+  './docs/tasks/scheduler-state.json',
+  'docs/tasks/scheduler-state.json'
+];
+
+function setupWebSocket() {
+  // Try to connect to WebSocket server
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = wsProtocol + '//' + window.location.host + '/ws';
+
+  try {
+    websocket = new WebSocket(wsUrl);
+
+    websocket.onopen = function(event) {
+      console.log('Connected to WebSocket server');
+      document.getElementById('refreshMode').textContent = 'WebSocket';
+      document.getElementById('refreshMode').className = 'connection-status connected';
+    };
+
+    websocket.onmessage = function(event) {
+      try {
+        const data = JSON.parse(event.data);
+        render(data);
+      } catch(e) {
+        console.error('Error parsing WebSocket message:', e);
+      }
+    };
+
+    websocket.onclose = function(event) {
+      console.log('WebSocket connection closed, falling back to polling');
+      document.getElementById('refreshMode').textContent = 'Polling';
+      document.getElementById('refreshMode').className = 'connection-status disconnected';
+      startPolling();
+    };
+
+    websocket.onerror = function(error) {
+      console.error('WebSocket error:', error);
+      document.getElementById('refreshMode').textContent = 'Polling';
+      document.getElementById('refreshMode').className = 'connection-status disconnected';
+      startPolling();
+    };
+  } catch(e) {
+    console.error('Failed to connect WebSocket:', e);
+    document.getElementById('refreshMode').textContent = 'Polling';
+    document.getElementById('refreshMode').className = 'connection-status disconnected';
+    startPolling();
+  }
+}
+
+function startPolling() {
+  if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+  autoRefreshInterval = setInterval(loadData, refreshIntervalMs);
+}
+
+function loadData() {
+  tryFetch(0);
+}
+
+function tryFetch(idx) {
+  if (idx >= DATA_PATHS.length) {
+    document.getElementById('errorBanner').style.display = 'block';
+    document.getElementById('errorBanner').textContent =
+      'Could not load scheduler-state.json. Start a local server from the project root: python3 -m http.server 8080';
+    return;
+  }
+  fetch(DATA_PATHS[idx])
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(render)
+    .catch(() => tryFetch(idx + 1));
+}
+
+function render(data) {
+  document.getElementById('errorBanner').style.display = 'none';
+
+  // Status badge
+  const badge = document.getElementById('statusBadge');
+  const statusText = document.getElementById('statusText');
+  badge.className = 'status-badge status-' + data.status;
+  statusText.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+
+  // Categorize tasks
+  const tasks = data.tasks || [];
+  const running = tasks.filter(t => t.status === 'running');
+  const pending = tasks.filter(t => t.status === 'pending');
+  const completed = tasks.filter(t => t.status === 'completed');
+  const failed = tasks.filter(t => t.status === 'failed');
+
+  // Stats
+  document.getElementById('statTotal').textContent = tasks.length;
+  document.getElementById('statRunning').textContent = running.length;
+  document.getElementById('statCompleted').textContent = completed.length;
+  document.getElementById('statPending').textContent = pending.length;
+  document.getElementById('statFailed').textContent = failed.length;
+
+  // Progress
+  const pct = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
+  document.getElementById('progressText').textContent = pct + '%';
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  // Task sections
+  renderTaskSection('runningSection', 'Running', running, 'tag-running');
+  renderTaskSection('pendingSection', 'Pending', pending, 'tag-pending');
+  renderTaskSection('completedSection', 'Completed', completed, 'tag-completed');
+  renderTaskSection('failedSection', 'Failed', failed, 'tag-failed');
+
+  // Agents
+  const agents = data.running_agents || [];
+  const agentsEl = document.getElementById('agentsSection');
+  if (agents.length > 0) {
+    const taskMap = {};
+    tasks.forEach(t => { taskMap[t.task_id] = t.description; });
+    agentsEl.innerHTML = '<div class="agents-section">' +
+      '<div class="task-section-title">Active Agents <span class="task-count">' + agents.length + '</span></div>' +
+      agents.map(a =>
+        '<div class="agent-row">' +
+        '<span class="agent-name">' + esc(a.agent_id) + '</span>' +
+        '<span class="agent-task">Task #' + a.task_id + ': ' + esc(taskMap[a.task_id] || '--') + '</span>' +
+        '<span>' + esc(a.nf_number || '--') + '</span>' +
+        '</div>'
+      ).join('') +
+      '</div>';
+  } else {
+    agentsEl.innerHTML = '';
+  }
+
+  // Time info
+  const parts = [];
+  if (data.start_time) parts.push('Started: ' + formatTime(data.start_time));
+  if (data.stop_time) parts.push('Stopped: ' + formatTime(data.stop_time));
+  parts.push('Last refreshed: ' + new Date().toLocaleTimeString());
+  document.getElementById('timeInfo').textContent = parts.join('  |  ');
+}
+
+function renderTaskSection(elId, title, tasks, tagClass) {
+  const el = document.getElementById(elId);
+  if (tasks.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML =
+    '<div class="task-section-title">' + title + ' <span class="task-count">' + tasks.length + '</span></div>' +
+    '<div class="task-grid">' +
+    tasks.map(t => renderCard(t, tagClass)).join('') +
+    '</div>';
+}
+
+function renderCard(t, tagClass) {
+  const wl = workloadBars(t.workload);
+  const prClass = 'priority-' + (t.priority || 'low').toLowerCase();
+  return '<div class="task-card">' +
+    '<div class="task-card-header">' +
+      '<span class="task-id">#' + t.task_id + (t.nf_number ? ' / ' + esc(t.nf_number) : '') + '</span>' +
+      '<span class="task-status-tag ' + tagClass + '">' + esc(t.status) + '</span>' +
+    '</div>' +
+    '<div class="task-title">' + esc(t.description) + '</div>' +
+    '<div class="task-meta">' +
+      '<span class="task-meta-item ' + prClass + '">Priority: ' + esc(t.priority) + '</span>' +
+      '<span class="task-meta-item">Workload: ' + wl + '</span>' +
+      (t.agent_id ? '<span class="task-meta-item">Agent: ' + esc(t.agent_id) + '</span>' : '') +
+      (t.duration_minutes ? '<span class="task-meta-item">' + t.duration_minutes + ' min</span>' : '') +
+    '</div>' +
+  '</div>';
+}
+
+function workloadBars(wl) {
+  const levels = { Small: 1, Medium: 2, Large: 3 };
+  const n = levels[wl] || 1;
+  let html = '<span class="workload-indicator">';
+  for (let i = 0; i < 3; i++) {
+    html += '<span' + (i < n ? ' class="active"' : '') + '></span>';
+  }
+  return html + '</span>';
+}
+
+function formatTime(iso) {
+  if (!iso) return '--';
+  return new Date(iso).toLocaleString();
+}
+
+function esc(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// Update header to include connection status
+function updateHeaderWithConnectionInfo() {
+  const refreshBtn = document.querySelector('.btn-refresh');
+  const btnContainer = refreshBtn.parentNode;
+
+  // Add connection status indicator
+  const connStatus = document.createElement('span');
+  connStatus.id = 'refreshMode';
+  connStatus.className = 'connection-status disconnected';
+  connStatus.textContent = 'Polling';
+  connStatus.style.marginLeft = '8px';
+  connStatus.style.fontSize = '12px';
+  connStatus.style.padding = '4px 8px';
+  connStatus.style.borderRadius = '4px';
+
+  btnContainer.appendChild(connStatus);
+
+  // Add tooltip
+  connStatus.title = 'Connection mode: WebSocket provides real-time updates, Polling checks every 2 seconds';
+}
+
+// Initialize everything
+document.addEventListener('DOMContentLoaded', function() {
+  updateHeaderWithConnectionInfo();
+  setupWebSocket(); // Try to establish WebSocket connection
+});
+
+// Load on startup (fallback in case DOMContentLoaded fires before script)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupWebSocket);
+} else {
+  setupWebSocket();
+}
+</script>
+</body>
+</html>

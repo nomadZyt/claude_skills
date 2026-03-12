@@ -7,17 +7,13 @@
 
 ## 待处理
 
-- [ ] 为 task-scheduler 添加单元测试 [优先级:High] [工作量:Medium]
-- [ ] 实现优先级队列调度算法 [优先级:Medium] [工作量:Large]
-- [ ] 添加任务依赖关系支持 [优先级:Low] [工作量:Large]
-- [ ] 创建 Web UI 界面 [优先级:Low] [工作量:Large]
-- [ ] 集成通知服务（Slack） [优先级:Low] [工作量:Medium]
+<!-- 无待处理任务 -->
 
-## 进行中
-
-<!-- 由调度器自动更新 -->
 
 ## 已完成
+
+- [x] 去掉 task-scheduler 的 Slack 通知模块 [优先级:High] [工作量:Medium] ✓
+- [x] Slack 通知服务单元测试 [优先级:High] [工作量:Medium] [NF:NF-002] ✓
 
 <!-- 由调度器自动更新 -->
 

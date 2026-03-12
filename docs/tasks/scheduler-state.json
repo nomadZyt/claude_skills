@@ -1,102 +1,26 @@
 {
-  "status": "stopped",
-  "start_time": "2026-03-10T17:00:00Z",
-  "stop_time": "2026-03-10T18:30:00Z",
-  "cron_job_id": null,
+  "status": "completed",
+  "start_time": "2026-03-12T14:00:00.000Z",
+  "end_time": "2026-03-12T14:53:00.000Z",
+  "team_name": "task-scheduler-1741804800",
+  "dashboard_port": null,
+  "dashboard_pid": null,
   "tasks": [
     {
-      "task_id": 1,
-      "description": "为 task-scheduler 添加单元测试",
-      "nf_number": "NF-003",
-      "agent_id": "agent-tst001",
-      "status": "running",
+      "index": 1,
+      "task_id": "1",
+      "description": "去掉 task-scheduler 的 Slack 通知模块",
+      "nf_number": null,
+      "agent_name": "worker-1",
       "priority": "High",
       "workload": "Medium",
-      "start_time": "2026-03-10T17:00:00Z",
-      "complete_time": null,
-      "duration_minutes": null
-    },
-    {
-      "task_id": 2,
-      "description": "实现优先级队列调度算法",
-      "nf_number": "NF-004",
-      "agent_id": "agent-sch002",
-      "status": "running",
-      "priority": "Medium",
-      "workload": "Large",
-      "start_time": "2026-03-10T17:00:00Z",
-      "complete_time": null,
-      "duration_minutes": null
-    },
-    {
-      "task_id": 3,
-      "description": "添加任务依赖关系支持",
-      "nf_number": "NF-005",
-      "agent_id": "agent-dep003",
-      "status": "running",
-      "priority": "Low",
-      "workload": "Large",
-      "start_time": "2026-03-10T17:00:00Z",
-      "complete_time": null,
-      "duration_minutes": null
-    },
-    {
-      "task_id": 4,
-      "description": "创建 Web UI 界面",
-      "nf_number": "NF-006",
-      "agent_id": "agent-ui004",
-      "status": "running",
-      "priority": "Low",
-      "workload": "Large",
-      "start_time": "2026-03-10T17:00:00Z",
-      "complete_time": null,
-      "duration_minutes": null
-    },
-    {
-      "task_id": 5,
-      "description": "集成通知服务（Slack）",
-      "nf_number": "NF-007",
-      "agent_id": null,
-      "status": "pending",
-      "priority": "Low",
-      "workload": "Medium",
-      "start_time": null,
-      "complete_time": null,
-      "duration_minutes": null
+      "dependencies": [],
+      "status": "completed"
     }
   ],
-  "running_agents": [
-    {
-      "task_id": 1,
-      "agent_id": "agent-tst001",
-      "nf_number": "NF-003",
-      "start_time": "2026-03-10T17:00:00Z"
-    },
-    {
-      "task_id": 2,
-      "agent_id": "agent-sch002",
-      "nf_number": "NF-004",
-      "start_time": "2026-03-10T17:00:00Z"
-    },
-    {
-      "task_id": 3,
-      "agent_id": "agent-dep003",
-      "nf_number": "NF-005",
-      "start_time": "2026-03-10T17:00:00Z"
-    },
-    {
-      "task_id": 4,
-      "agent_id": "agent-ui004",
-      "nf_number": "NF-006",
-      "start_time": "2026-03-10T17:00:00Z"
-    }
-  ],
-  "completed_tasks": [],
-  "failed_tasks": [],
-  "stats": {
-    "total_tasks": 5,
-    "completed": 0,
-    "failed": 0,
-    "total_duration_minutes": 0
-  }
+  "index_to_task_id": { "1": "1" },
+  "max_concurrency": 4,
+  "loop_interval": "10m",
+  "loop_active": false,
+  "loop_job_id": null
 }
