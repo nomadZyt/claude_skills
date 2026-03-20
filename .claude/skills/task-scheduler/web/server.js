@@ -19,6 +19,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const { exec } = require('child_process');
 
 // WebSocket implementation (simple RFC 6455 compliant server)
 class WebSocketServer {
@@ -68,6 +69,11 @@ class WebSocketServer {
     });
 
     console.log(`New WebSocket client connected. Total clients: ${this.clients.size}`);
+
+    // Notify server to send initial state to newly connected client
+    if (this.onClientConnected) {
+      this.onClientConnected(client);
+    }
   }
 
   generateAcceptHash(key) {
@@ -89,17 +95,20 @@ class WebSocketServer {
     }
   }
 
-  broadcast(data) {
+  sendToClient(client, data) {
     const message = JSON.stringify(data);
     const frame = this.createFrame(message);
+    try {
+      client.socket.write(frame);
+    } catch (err) {
+      console.error('Error sending to client:', err.message);
+      this.clients.delete(client);
+    }
+  }
 
+  broadcast(data) {
     for (const client of this.clients) {
-      try {
-        client.socket.write(frame);
-      } catch (err) {
-        console.error('Error broadcasting to client:', err.message);
-        this.clients.delete(client);
-      }
+      this.sendToClient(client, data);
     }
   }
 
@@ -135,12 +144,30 @@ class WebSocketServer {
 class TaskSchedulerServer {
   constructor(options = {}) {
     this.port = options.port || 8099;
-    this.stateFile = path.resolve(options.stateFile || path.join(__dirname, '../../../../docs/tasks/scheduler-state.json'));
+    // Find project root by looking for CLAUDE.md or .git directory
+    const projectRoot = options.projectRoot || this.findProjectRoot();
+    this.stateFile = path.resolve(options.stateFile || path.join(projectRoot, 'docs/tasks/scheduler-state.json'));
     this.webDir = options.webDir || __dirname;
     this.lastData = null;
     this.wsServer = null;
     this.httpServer = null;
     this.watcher = null;
+    this.autoOpen = options.autoOpen !== false; // Default: auto open browser
+  }
+
+  findProjectRoot() {
+    // Walk up from __dirname to find project root (has .git or CLAUDE.md)
+    let dir = __dirname;
+    for (let i = 0; i < 10; i++) {
+      if (fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, 'CLAUDE.md'))) {
+        return dir;
+      }
+      const parent = path.dirname(dir);
+      if (parent === dir) break;
+      dir = parent;
+    }
+    // Fallback: assume CWD is project root
+    return process.cwd();
   }
 
   start() {
@@ -152,14 +179,38 @@ class TaskSchedulerServer {
     // Create WebSocket server
     this.wsServer = new WebSocketServer(this.httpServer);
 
+    // Send current state to newly connected clients
+    this.wsServer.onClientConnected = (client) => {
+      fs.readFile(this.stateFile, 'utf8', (err, data) => {
+        if (err) return;
+        try {
+          const json = JSON.parse(data);
+          this.wsServer.sendToClient(client, json);
+        } catch (e) {
+          // ignore parse errors
+        }
+      });
+    };
+
     // Start watching the state file
     this.startWatching();
 
     // Start the server
     this.httpServer.listen(this.port, () => {
-      console.log(`Task Scheduler Dashboard Server running at http://localhost:${this.port}`);
+      const dashboardUrl = `http://localhost:${this.port}`;
+      console.log(`Task Scheduler Dashboard Server running at ${dashboardUrl}`);
       console.log(`WebSocket endpoint: ws://localhost:${this.port}/ws`);
       console.log(`Watching state file: ${this.stateFile}`);
+
+      // Auto open browser
+      if (this.autoOpen) {
+        const openCmd = process.platform === 'darwin' ? 'open'
+          : process.platform === 'win32' ? 'start'
+          : 'xdg-open';
+        exec(`${openCmd} ${dashboardUrl}`, (err) => {
+          if (err) console.log('Could not auto-open browser:', err.message);
+        });
+      }
     });
   }
 

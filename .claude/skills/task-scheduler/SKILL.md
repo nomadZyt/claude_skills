@@ -148,22 +148,23 @@ Agent 完成后主动发消息通知调度器（team lead），无需轮询。
 
 Bash tool 调用（后台运行）：
 {
-  "command": "cd .claude/skills/task-scheduler/web && node server.js &",
+  "command": "node .claude/skills/task-scheduler/web/server.js",
   "description": "启动 Task Scheduler Dashboard WebSocket 服务器",
   "run_in_background": true
 }
 
 服务器信息：
-- HTTP 端口：8080
-- WebSocket 端点：ws://localhost:8080/ws
-- 监听文件：docs/tasks/scheduler-state.json
+- HTTP 端口：8099（默认）
+- WebSocket 端点：ws://localhost:8099/ws
+- 监听文件：docs/tasks/scheduler-state.json（自动从项目根目录定位）
+- 服务器启动后自动打开浏览器
 
-如果端口 8080 被占用，使用备用端口：
-node server.js --port 8081
+如果端口 8099 被占用，使用备用端口：
+node .claude/skills/task-scheduler/web/server.js --port 8081
 
 记录服务器进程信息到 scheduler-state.json：
 {
-  "dashboard_port": 8080,
+  "dashboard_port": 8099,
   "dashboard_pid": {进程ID}
 }
 ```
@@ -326,7 +327,7 @@ status 字段说明：
 📋 总任务数：{N}
 ⚡ 最大并发：4
 🏗️ Team: {team_name}
-🌐 Dashboard: http://localhost:8080
+🌐 Dashboard: http://localhost:8099
 
 进行中的任务：
 - Task #{id}: {描述} → worker-{id}

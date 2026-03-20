@@ -387,8 +387,9 @@ let autoRefreshInterval = null;
 let useWebsocket = true; // Default to WebSocket, fall back to polling
 let refreshIntervalMs = 2000; // Polling interval when WebSocket is not available
 
-// Data paths to try in order (supports both local server and different serve roots)
+// Data paths to try in order (API first, then static file fallbacks)
 var DATA_PATHS = [
+  '/api/state',
   '../docs/tasks/scheduler-state.json',
   './docs/tasks/scheduler-state.json',
   'docs/tasks/scheduler-state.json'
@@ -600,16 +601,16 @@ function updateHeaderWithConnectionInfo() {
 }
 
 // Initialize everything
-document.addEventListener('DOMContentLoaded', function() {
+function init() {
   updateHeaderWithConnectionInfo();
-  setupWebSocket(); // Try to establish WebSocket connection
-});
+  loadData(); // Load initial data immediately via HTTP
+  setupWebSocket(); // Then establish WebSocket for real-time updates
+}
 
-// Load on startup (fallback in case DOMContentLoaded fires before script)
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', setupWebSocket);
+  document.addEventListener('DOMContentLoaded', init);
 } else {
-  setupWebSocket();
+  init();
 }
 </script>
 </body>

@@ -1,16 +1,14 @@
 {
   "status": "completed",
-  "start_time": "2026-03-12T14:00:00.000Z",
-  "end_time": "2026-03-12T14:53:00.000Z",
-  "team_name": "task-scheduler-1741804800",
-  "dashboard_port": null,
-  "dashboard_pid": null,
+  "start_time": "2026-03-21T10:00:00Z",
+  "stop_time": "2026-03-21T10:31:00Z",
+  "team_name": "task-scheduler-1711015200",
   "tasks": [
     {
       "index": 1,
       "task_id": "1",
-      "description": "去掉 task-scheduler 的 Slack 通知模块",
-      "nf_number": null,
+      "description": "模拟面试系统设计思路",
+      "nf_number": "NF-003",
       "agent_name": "worker-1",
       "priority": "High",
       "workload": "Medium",
@@ -20,7 +18,7 @@
   ],
   "index_to_task_id": { "1": "1" },
   "max_concurrency": 4,
+  "dashboard_port": 8099,
   "loop_interval": "10m",
-  "loop_active": false,
-  "loop_job_id": null
+  "loop_active": false
 }
