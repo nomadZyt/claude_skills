@@ -269,6 +269,7 @@ Agent tool 调用：
 
 如果任务失败，同样通知 team lead 并说明失败原因。",
   "subagent_type": "general-purpose",
+  "mode": "bypassPermissions",
   "team_name": "{team_name}",
   "name": "worker-{task_id}",
   "run_in_background": true
