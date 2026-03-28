@@ -1,0 +1,26 @@
+---
+id: log-{{YYYYMMDD}}
+type: log
+tags: [daily]
+project: {{project-name}}
+importance: low
+created: {{YYYY-MM-DD}}
+expires: null
+summary: "{{YYYY-MM-DD}} 工作记录"
+---
+
+# {{YYYY-MM-DD}} 工作记录
+
+## 完成
+
+- {{task 1}}
+- {{task 2}}
+
+## 决策
+
+- {{决策及原因（如有重要决策，建议单独创建 type: decision 的记忆）}}
+
+## 明日计划
+
+- {{plan 1}}
+- {{plan 2}}
