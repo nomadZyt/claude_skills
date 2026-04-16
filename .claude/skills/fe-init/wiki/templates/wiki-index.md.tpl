@@ -64,11 +64,11 @@ graph LR
     %% 路由跳转（虚线，仅前端）
     {id_2} -.->|"route"| {id_3}
 
-    %% 样式
-    classDef entry fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
-    classDef business fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
-    classDef foundation fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    classDef deprecated fill:#fce4ec,stroke:#c62828,stroke-dasharray:5
+    %% 样式（color 固定黑色，避免暗色主题下节点文字被渲染为白色）
+    classDef entry fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000000
+    classDef business fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000000
+    classDef foundation fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000
+    classDef deprecated fill:#fce4ec,stroke:#c62828,stroke-dasharray:5,color:#000000
 
     class {entry_ids} entry
     class {biz_ids} business

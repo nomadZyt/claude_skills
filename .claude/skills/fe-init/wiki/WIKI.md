@@ -1,13 +1,9 @@
 ---
 name: fe-wiki
-description: 项目拓扑 Wiki - fe-init 子模块。深度解析代码仓库，生成 AI 可消费的结构化知识图谱（.wiki/）。支持增量更新、历史包袱记录、架构感知查询。
-invocable: false
-metadata:
-  openclaw:
-    requires:
-      tools: [Read, Write, Edit, Bash, Glob, Grep]
-    optional:
-      tools: [Agent, AskUserQuestion]
+description: "项目拓扑 Wiki - fe-init 子模块。深度解析代码仓库，生成 AI 可消费的结构化知识图谱（.wiki/）。支持增量更新、历史包袱记录、架构感知查询。"
+user-invocable: true
+disable-model-invocation: true
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Project Topology Wiki — AI 知识基础设施
@@ -222,7 +218,7 @@ last_scanned: "2026-04-13T14:30:52+08:00"
 3. **模块依赖关系图 (Entity Relationship Graph)**：使用 Mermaid `graph LR` 生成依赖网络图
    - 每个模块节点显示名称 + 路径
    - 箭头 = 依赖方向（A → B 表示 A 依赖 B），标注依赖用途
-   - 用 `classDef` 按层级着色（蓝=入口, 绿=业务, 橙=基础, 红虚线=废弃）
+   - 用 `classDef` 按层级着色（蓝=入口, 绿=业务, 橙=基础, 红虚线=废弃），并设置 `color:#000000` 保证节点文字为黑色（避免部分渲染器在暗色主题下将文字显示为白色）
    - 实线 = 同层依赖，虚线 = 跨层依赖
 
 4. **依赖热力矩阵**：用表格展示模块间的依赖关系矩阵

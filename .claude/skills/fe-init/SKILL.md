@@ -1,13 +1,10 @@
 ---
 name: fe-init
-description: 前端项目 AI 初始化 - 融合六维度项目分析 + 拓扑 Wiki 图谱生成，自动生成 CLAUDE.md + .claude/AI_RULES.md + .wiki/，让 Claude Code 快速理解项目并遵循现有模式
-invocable: true
-metadata:
-  openclaw:
-    requires:
-      tools: [Read, Write, Edit, Bash, Glob, Grep]
-    optional:
-      tools: [Agent, AskUserQuestion]
+description: "前端项目 AI 初始化 - 融合六维度项目分析 + 拓扑 Wiki 图谱生成，自动生成 CLAUDE.md + .claude/AI_RULES.md + .wiki/，让 Claude Code 快速理解项目并遵循现有模式"
+disable-model-invocation: true
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+version: "1.0.1"
+tags: ["frontend", "init", "wiki", "fe-wiki"]
 ---
 
 # fe-init — 前端项目 AI 初始化
@@ -24,6 +21,7 @@ metadata:
 | glossary.md | .wiki/ | 项目术语表 |
 | {id}-{slug}.md | .wiki/nodes/ | 原子知识节点（每个模块一个） |
 | .wiki-state.json | .wiki/ | 增量更新状态快照 |
+| fe-init.md 等 ×4 | .claude/commands/ | Claude Code 斜杠命令（与技能包同步） |
 
 ## 执行流程
 
@@ -128,6 +126,27 @@ metadata:
    - 纠错记录章节 → 保留所有已有记录
 3. 使用 Edit 工具增量修改，不覆盖整个文件
 
+### 步骤 6b：同步 Claude Code 命令（.claude/commands/）
+
+> **每次执行 `/fe-init` 必须做**：把技能包里的命令模板落到**当前项目根目录**下的 `.claude/commands/`，这样团队成员可用 `/fe-init`、`/fe-wiki-init` 等斜杠命令。
+
+**目录**：
+
+- 若项目根目录没有 `.claude/`，创建它
+- 若没有 `.claude/commands/`，创建它（例如：`mkdir -p .claude/commands`）
+- 若已存在，直接在 `commands/` 下写入或覆盖同名文件即可
+
+**源文件（相对技能根目录 `.claude/skills/fe-init/`）→ 目标（相对项目根）**：
+
+| 模板路径 | 写入目标 |
+|----------|----------|
+| `templates/commands/fe-init.md` | `.claude/commands/fe-init.md` |
+| `templates/commands/fe-wiki-init.md` | `.claude/commands/fe-wiki-init.md` |
+| `templates/commands/fe-wiki-query.md` | `.claude/commands/fe-wiki-query.md` |
+| `templates/commands/fe-wiki-update.md` | `.claude/commands/fe-wiki-update.md` |
+
+**做法**：用 Read 读取技能包内上述四个模板，再用 Write 写入项目对应路径（与模板内容保持一致，保证与当前 fe-init 技能版本同步）。
+
 ### 步骤 7：输出初始化结果
 
 ```
@@ -145,6 +164,7 @@ metadata:
 📄 已生成/更新文件：
 - CLAUDE.md — 项目配置（{新建/更新}）
 - .claude/AI_RULES.md — AI 红线规则（{新建/更新}）
+- .claude/commands/ — fe-init、fe-wiki-init、fe-wiki-query、fe-wiki-update（已同步）
 
 🚫 AI 红线摘要：
 - 技术栈：{N} 条规则

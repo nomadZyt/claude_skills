@@ -1,0 +1,16 @@
+{
+  "version": "1.0",
+  "project_type": "claude-skills-repo",
+  "language": "Markdown",
+  "last_full_scan": "2026-04-16T16:45:00+08:00",
+  "scanned_dirs_hash": "0526c808ddb3ce7c52a1a619a3458b31",
+  "node_count": 6,
+  "nodes": [
+    { "id": "20260416-nf-system", "slug": "nf-system", "path": ".claude/skills/nf-system", "entry_file_hash": "initial" },
+    { "id": "20260416-fe-init", "slug": "fe-init", "path": ".claude/skills/fe-init", "entry_file_hash": "initial" },
+    { "id": "20260416-task-scheduler", "slug": "task-scheduler", "path": ".claude/skills/task-scheduler", "entry_file_hash": "initial" },
+    { "id": "20260416-weekly-report", "slug": "weekly-report", "path": ".claude/skills/weekly-report", "entry_file_hash": "initial" },
+    { "id": "20260416-za-design-system", "slug": "za-design-system", "path": ".claude/skills/za-auto-insurance-design-system", "entry_file_hash": "initial" },
+    { "id": "20260416-docs", "slug": "docs", "path": ".claude/skills/docs", "entry_file_hash": "initial" }
+  ]
+}

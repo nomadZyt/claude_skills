@@ -102,5 +102,3 @@ last_scanned: "2026-04-13T14:30:52+08:00"
 | Skill | 协作方式 |
 |-------|---------|
 | `/fe-init` | Wiki 是其超集，AI_RULES.md 和 Legacy Constraints 互补 |
-| `/nf-new` | NF 可引用 Wiki 节点 |
-| `/nf-explore` | 上下文加载可包含 Wiki 节点 |
