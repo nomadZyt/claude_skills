@@ -6,8 +6,10 @@
 
 在 **步骤 0** 中，若满足以下任一条件，则视为 **前端项目**，走标准流程（步骤 1～7 原文）：
 
-- `package.json` 的 `dependencies` / `devDependencies` 中可识别常见 **Web UI 栈**：如 `react`、`react-dom`、`vue`、`@angular/core`、`svelte`、`solid-js`，或元框架 `next`、`nuxt`、`@remix-run/*`、`@umijs/*` 等（与 `tech-stack-detection.md` 一致）。
+- `package.json` 的 `dependencies` / `devDependencies` 中可识别常见 **Web UI 栈**（完整框架清单见 `tech-stack-detection.md` 的「框架」识别表，包括 React / Vue / Angular / Svelte / Solid / Next / Nuxt / Remix / Umi 等）。
 - 虽依赖表不典型，但存在明确前端工程信号：例如根目录存在 `vite.config.*` + 明显浏览器端入口，且以组件/页面组织代码（需 Read 少量文件佐证）。
+
+> **信源说明**：前端框架的判定关键词统一以 `tech-stack-detection.md` 为唯一信源。本文件不再重复列举具体框架名称，避免两处列表不同步。
 
 以下情况通常判为 **非前端项目**（须走步骤 0 门禁）：
 

@@ -93,6 +93,36 @@
 - CSS 变量使用方式
 - UI 库主题定制
 
+### 8. 权限体系
+
+**搜索关键词**：`permission`, `access`, `role`, `auth`, `RBAC`, `ACL`, `canAccess`, `hasPermission`
+
+**常见文件**：
+- `src/access.*` / `src/utils/access.*` — 权限定义/判断
+- `src/components/Authorized.*` / `src/wrappers/auth.*` — 权限包装组件
+- 路由配置中的 `access` / `authority` / `roles` 字段
+
+**关注点**：
+- 权限粒度：页面级 / 按钮级 / 字段级
+- 权限模型：RBAC（角色-权限）/ ACL / 自定义
+- 权限数据来源：接口获取 / Token 解析 / 配置文件
+- 前端权限控制方式：路由守卫 / 组件包装 / 指令（Vue）
+- 菜单与权限的关联方式
+
+### 9. 实时数据推送
+
+**搜索关键词**：`WebSocket`, `ws://`, `wss://`, `SSE`, `EventSource`, `socket.io`, `polling`, `setInterval`
+
+**常见文件**：
+- `src/utils/websocket.*` / `src/utils/socket.*`
+- `src/services/realtime.*`
+
+**关注点**：
+- 通信协议：WebSocket / SSE（Server-Sent Events）/ 长轮询
+- 连接管理：重连策略、心跳机制
+- 消息类型与处理方式
+- 与状态管理的集成方式（推送数据如何更新 Store/组件状态）
+
 ## 输出格式
 
 ```markdown
@@ -111,3 +141,5 @@
 | 错误处理 | `src/components/ErrorBoundary.*`, `src/utils/error.*` |
 | 国际化 | `src/locales/`, `src/i18n/` |
 | 主题 | `src/styles/theme.*`, `src/theme/` |
+| 权限 | `src/access.*`, `src/utils/access.*`, `src/wrappers/auth.*` |
+| 实时推送 | `src/utils/websocket.*`, `src/utils/socket.*`, `src/services/realtime.*` |

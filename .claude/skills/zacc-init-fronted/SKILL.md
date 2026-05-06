@@ -1,9 +1,9 @@
 ---
 name: zacc-init-fronted
-description: "众安前端（zacc）— 项目 AI 初始化：六维度分析 + CLAUDE.md / .claude/AI_RULES.md，不含 .wiki/。拓扑 Wiki 请用技能 zacc-wiki-fronted。"
+description: "众安前端（zacc）— 项目 AI 初始化：六维度分析 + CLAUDE.md / .claude/AI_RULES.md，不含 wiki/。拓扑 Wiki 请用技能 zacc-init-wiki-fronted。"
 disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
-version: "1.1.0"
+version: "1.3.0"
 tags: ["frontend", "init-fronted"]
 ---
 
@@ -11,14 +11,14 @@ tags: ["frontend", "init-fronted"]
 
 为团队内部前端项目生成 AI 开发配置，让 Claude Code 理解项目上下文并遵循现有开发模式。
 
-> **配套技能**：生成 `.wiki/` 拓扑图谱请使用 **`zacc-wiki-fronted`**（本技能不包含 Wiki 步骤）。
+> **配套技能**：生成 `wiki/` 拓扑图谱请使用 **`zacc-init-wiki-fronted`**（本技能不包含 Wiki 步骤）。
 
 ### Wiki 技能未安装时的提醒（不影响 init）
 
-执行本技能收尾时，**用 Glob 或 Read 探测**当前环境是否具备 **`zacc-wiki-fronted`**（例如工作区或技能目录下是否存在 `zacc-wiki-fronted/SKILL.md`、`.claude/skills/zacc-wiki-fronted/SKILL.md` 等常见路径；以实际可解析路径为准）。
+执行本技能收尾时，**用 Glob 或 Read 探测**当前环境是否具备 **`zacc-init-wiki-fronted`**（例如工作区或技能目录下是否存在 `zacc-init-wiki-fronted/SKILL.md`、`.claude/skills/zacc-init-wiki-fronted/SKILL.md` 等常见路径；以实际可解析路径为准）。
 
-- **若未找到**（判定为仅安装了 init、未安装 wiki 技能）：在步骤 7 的输出摘要中**追加一行简短提醒**——`zacc-wiki-fronted` 未安装，项目拓扑 Wiki（`.wiki/`）需安装该技能后单独执行；**不影响**本次 `zacc-init-fronted` 流程与已生成的 `CLAUDE.md` / `AI_RULES.md` 等产出。
-- **若已找到**：不必重复此提醒；可照常提示「需要 Wiki 时使用 `zacc-wiki-fronted`」。
+- **若未找到**（判定为仅安装了 init、未安装 wiki 技能）：在步骤 7 的输出摘要中**追加一行简短提醒**——`zacc-init-wiki-fronted` 未安装，项目拓扑 Wiki（`wiki/`）需安装该技能后单独执行；**不影响**本次 `zacc-init-fronted` 流程与已生成的 `CLAUDE.md` / `AI_RULES.md` 等产出。
+- **若已找到**：不必重复此提醒；可照常提示「需要 Wiki 时使用 `zacc-init-wiki-fronted`」。
 
 ## 输出文件
 
@@ -35,7 +35,7 @@ tags: ["frontend", "init-fronted"]
 **必须先于步骤 1 执行**，用于避免在明显非前端的仓库上套用前端六维分析。
 
 1. **判定是否前端项目**（与 `references/tech-stack-detection.md` 一致）：
-   - 读取 `package.json`（若存在）的 `dependencies` / `devDependencies`，检查是否出现典型 **Web UI 框架或元框架**（如 `react`、`vue`、`next`、`nuxt`、`@angular/core`、`svelte`、`solid-js`、`@remix-run/*`、`@umijs/*` 等）。
+   - 读取 `package.json`（若存在）的 `dependencies` / `devDependencies`，检查是否出现典型 **Web UI 框架或元框架**（完整框架清单见 `references/tech-stack-detection.md` 的「框架」识别表，此处不重复列举，以该文档为唯一信源）。
    - 无 `package.json` 或依赖表明 **纯后端 / 其他语言 / 非浏览器 UI 工程** → 判为 **非前端**。
    - 边界情况（全栈 Monorepo、依赖表不清晰）：宁可判为 **非前端**，走下方告知与确认，避免误报。
 
@@ -60,6 +60,12 @@ tags: ["frontend", "init-fronted"]
 **monorepo 检测**：
 - `pnpm-workspace.yaml` / `lerna.json` / `nx.json` / `turbo.json`
 
+**Monorepo 子包范围限定**（检测到 monorepo 时）：
+- 使用 **AskUserQuestion** 询问用户要初始化的子包路径（如 `packages/web`、`apps/admin`），或选择「仅描述仓库整体」
+- 若用户指定了子包路径，**后续步骤 2～6 的所有扫描、采样、路由分析均以该子包为根目录**（即用子包的 `package.json`、`src/`、`tsconfig.json` 等）
+- 生成的 `CLAUDE.md` 和 `.claude/AI_RULES.md` 仍放在**仓库根目录**，但在项目概述中标注 `初始化范围：{子包路径}`
+- 若用户选择「仅描述仓库整体」，则在 CLAUDE.md 中注明「未绑定具体子包，建议后续指定子包重新初始化」
+
 **技术栈识别**：
 - 参考 `references/tech-stack-detection.md` 中的识别方法和关键词
 - 输出：类别 | 技术选型 | 版本 表格
@@ -67,6 +73,7 @@ tags: ["frontend", "init-fronted"]
 
 ### 步骤 2：项目结构分析
 
+- 参考 `references/project-structure-analysis.md` 中的扫描策略和组织模式识别方法
 - 使用 Glob/LS 扫描 `src/` 目录（深度 2-3 层）
 - 识别组织模式：
   - 按功能（feature-based）：`src/features/xxx/`
@@ -76,6 +83,8 @@ tags: ["frontend", "init-fronted"]
 - **若非前端降级模式**：不强行套用前端目录语义；按 `references/non-frontend-degraded.md` 扫描与归纳。
 
 ### 步骤 3：代码规范提取
+
+- 参考 `references/code-standards-extraction.md` 中的配置文件读取优先级和命名风格推断方法
 
 **配置文件读取**：
 - ESLint：`.eslintrc.*` / `eslint.config.*` / `package.json` 的 `eslintConfig`
@@ -147,7 +156,7 @@ tags: ["frontend", "init-fronted"]
 | 无 CLAUDE.md | 基于模板完整生成 |
 | 已有 CLAUDE.md | 增量更新：补缺失章节、更新过时信息、保留用户自定义内容 |
 | 无 .claude/AI_RULES.md | 基于模板完整生成 |
-| 已有 .claude/AI_RULES.md | 询问用户是否重新生成 |
+| 已有 .claude/AI_RULES.md | 询问用户：**增量更新** / **重新生成**。增量更新时保留「附录 → 纠错追加规则」章节的已有条目，仅更新四类红线正文 |
 
 **增量更新 CLAUDE.md 的规则**：
 1. 读取现有 CLAUDE.md 内容
@@ -156,6 +165,15 @@ tags: ["frontend", "init-fronted"]
    - 标准章节内容过时（如版本号变化）→ 更新
    - 非标准章节（用户自定义）→ 保留不动
    - 纠错记录章节 → 保留所有已有记录
+3. 使用 Edit 工具增量修改，不覆盖整个文件
+
+**增量更新 AI_RULES.md 的规则**（用户选择增量更新时）：
+1. 读取现有 AI_RULES.md 内容
+2. 逐章节对比：
+   - 四类红线正文（技术栈/架构/代码风格/业务逻辑）→ 用最新分析结果更新
+   - 功能修改确认规则 → 用最新分析结果更新
+   - 附录 → 纠错追加规则 → **保留所有已有记录**，不删除不覆盖
+   - 元信息（版本、日期）→ 更新
 3. 使用 Edit 工具增量修改，不覆盖整个文件
 
 ### 步骤 6b：同步斜杠命令（可选）
@@ -174,6 +192,33 @@ tags: ["frontend", "init-fronted"]
 | `templates/commands/zacc-init-fronted.md` | `.claude/commands/zacc-init-fronted.md` |
 
 **做法**：用 Read 读取技能包内模板，再用 Write 写入项目对应路径。
+
+### 步骤 6c：产出校验
+
+文件生成/更新后，**必须运行校验脚本**验证产出完整性：
+
+```bash
+bash .claude/skills/zacc-init-fronted/scripts/verify-init.sh
+```
+
+校验项：
+- 占位符是否全部填充（CLAUDE.md + AI_RULES.md）
+- 必要章节是否完整
+- 红线规则是否非空
+- 交叉一致性（包管理器、AI_RULES 引用）
+- 模板 HTML 注释是否已清理
+
+若有 FAIL 项，必须修正后再进入步骤 7。WARN 项向用户汇报即可。
+
+### 步骤 6d：填写初始化日志
+
+在 CLAUDE.md 底部的「初始化日志」表格追加一行：
+
+```
+| {YYYY-MM-DD HH:MM} | v{参见 SKILL.md frontmatter version} | {标准/降级} | {新建/更新}：{变更摘要} |
+```
+
+> **版本号取值**：读取本技能 SKILL.md 顶部 frontmatter 的 `version` 字段，填入 `v` + 该值（如 `v1.3.0`）。
 
 ### 步骤 7：输出初始化结果
 
@@ -202,10 +247,10 @@ tags: ["frontend", "init-fronted"]
 - 代码风格：{N} 条规则
 - 业务逻辑：{N} 条规则
 
-💡 需要生成项目拓扑 Wiki（.wiki/）时，请安装并执行技能 **zacc-wiki-fronted**。
+💡 需要生成项目拓扑 Wiki（wiki/）时，请安装并执行技能 **zacc-init-wiki-fronted**。
 
-⚠️ 若检测到 **zacc-wiki-fronted 未安装**（可选，仅当环境中无该技能时输出）：
-- 提醒：拓扑 Wiki 技能未安装，无法在本环境直接生成 `.wiki/`；**不影响**本次初始化已完成的内容。
+⚠️ 若检测到 **zacc-init-wiki-fronted 未安装**（可选，仅当环境中无该技能时输出）：
+- 提醒：拓扑 Wiki 技能未安装，无法在本环境直接生成 `wiki/`；**不影响**本次初始化已完成的内容。
 ```
 
 **非前端降级模式**（用户于步骤 0 选择继续后）：在上述摘要基础上，**必须**增加一行：

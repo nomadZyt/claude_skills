@@ -96,18 +96,3 @@ git push
 - 开发规范：`docs/dev_guide/`
 
 ---
-
-## 项目拓扑 Wiki
-
-### 规则
-- 修改任何技能包前，必须先查阅 `.wiki/index.md` 了解模块关系
-- 发现代码中的历史包袱或逻辑矛盾时，通过 **`/zacc-wiki-fronted`**（或技能 **zacc-wiki-fronted**）选择「增量更新 → **legacy**」记录
-- 不得忽略 Wiki 节点中的 Legacy Constraints
-
-### 命令
-- 使用 **`/zacc-wiki-fronted`** 或技能 **`zacc-wiki-fronted`**：按交互选择 **初始化 / 查询 / 增量更新**；选「增量更新」时再选 **子命令**（scan / legacy / node add/deprecate/update / refresh）
-
-### 文件位置
-- Wiki 索引：`.wiki/index.md`
-- Wiki 节点：`.wiki/nodes/`
-- 术语表：`.wiki/glossary.md`

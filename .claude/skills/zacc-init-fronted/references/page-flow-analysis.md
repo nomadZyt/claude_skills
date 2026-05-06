@@ -35,11 +35,33 @@
 
 | 状态类型 | 说明 |
 |---------|------|
-| 弹窗显隐 | modal/drawer 的 visible |
 | 加载状态 | loading/submitting |
 | 展开收起 | expanded/collapsed |
 | 表单校验 | errors/touched |
 | UI 交互 | hover/focus/active |
+
+### 3b. Modal/Drawer 流转识别
+
+> B 端后台系统中大量操作通过 Modal/Drawer 完成，而非路由跳转。此类流转在红线提取中同样重要。
+
+**搜索关键词**：`Modal`, `Drawer`, `Dialog`, `visible`, `open`, `onClose`, `onCancel`, `onOk`
+
+**需要关注的 Modal/Drawer 模式**：
+
+| 模式 | 说明 | 搜索关键词 |
+|------|------|-----------|
+| CRUD 弹窗 | 新建/编辑/查看共用一个 Modal，通过 mode 区分 | `modalType`, `formMode`, `isEdit`, `isView` |
+| 确认弹窗 | 删除/提交等危险操作前的确认 | `confirm`, `Modal.confirm`, `Popconfirm` |
+| 多步弹窗 | Modal 内包含步骤流程（如审批流） | `step` + `Modal`, `Drawer` + `Steps` |
+| 级联弹窗 | 一个 Modal 内打开另一个 Modal | 嵌套的 `visible`/`open` 状态 |
+| 选择器弹窗 | 点选数据后回填到父表单 | `onSelect`, `onChoose`, `selectedRows` |
+
+**分析要点**：
+
+1. **触发方式**：从哪个页面/表格操作列触发
+2. **数据传入**：打开时传入的初始数据（record/id/空）
+3. **数据回传**：关闭后如何刷新父组件（回调函数/事件/Store）
+4. **状态管理**：visible/open 状态放在父组件还是自身管理
 
 ### 4. 关键代码定位
 
@@ -98,3 +120,4 @@
 3. **数据获取触发时机**：mounted / useEffect / 路由守卫
 4. **模块间通信方式**：Store / 事件 / props / URL 参数
 5. **流程控制模式**：步骤状态 / 路由嵌套 / 条件渲染
+6. **Modal/Drawer 模式**：CRUD 弹窗复用方式、数据回传机制、状态管理位置

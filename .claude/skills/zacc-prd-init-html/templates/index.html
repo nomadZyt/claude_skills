@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body data-role="page" data-name="prototype-home" class="min-h-screen flex flex-col">
+
+  <header data-role="navbar" data-name="main-nav" class="flex items-center justify-between p-4 border-b">
+    <a href="#" onclick="navigate('home')" class="font-medium">页面标题</a>
+    <button type="button" data-icon="更多" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-gray-600" aria-label="更多">⋯</button>
+  </header>
+
+  <!-- Module Navigation: 列出所有子模块，点击切换视图 -->
+  <nav data-role="tabbar" data-name="module-nav" class="flex gap-2 p-3 border-b bg-gray-50 text-sm">
+    <button onclick="navigate('home')" class="px-3 py-1 rounded border">首页</button>
+    <!-- 动态生成：根据 PRD 解析结果添加子模块导航项 -->
+    <!-- 示例：<button onclick="navigate('case-list')" class="px-3 py-1 rounded border">案件列表</button> -->
+  </nav>
+
+  <!-- SPA Content: 子模块 HTML 在此动态渲染 -->
+  <main id="app" class="flex-1 p-4"></main>
+
+  <!-- Route Script: fetch 子模块 HTML 并注入 #app -->
+  <script>
+    async function navigate(module) {
+      const resp = await fetch(module + '.html');
+      const html = await resp.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const body = doc.querySelector('body');
+      document.getElementById('app').innerHTML = body ? body.innerHTML : html;
+    }
+    // 默认加载第一个模块
+    navigate('home');
+  </script>
+
+</body>
+</html>

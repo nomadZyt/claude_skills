@@ -1,0 +1,7 @@
+{
+  "name": "zacc-prd-by-html",
+  "description": "从产品原型文件（HTML）反向推导生成 PRD 产品需求文档。支持单文件/目录/ZIP/远程URL输入，六维度结构化提取，Plan Mode 审批后落盘。",
+  "version": "2.0.0",
+  "author": "zyt",
+  "tags": ["prd", "product", "documentation", "reverse-engineering"]
+}

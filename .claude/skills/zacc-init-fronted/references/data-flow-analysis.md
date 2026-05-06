@@ -78,6 +78,13 @@
 ## 框架语法参考
 
 > 以下为不同框架的标准写法，用于识别项目中使用的具体模式。
+>
+> **裁剪规则**：Agent 在步骤 1 已识别项目的框架（React / Vue / Angular / 小程序等）。
+> 本节仅需阅读**当前项目对应框架**的示例，跳过其他框架段落，以节省上下文预算。
+> - React 项目 → 阅读「路由配置-React」「获取参数-React Router v6」「状态管理-Redux Toolkit / Zustand / Jotai / MobX」「组件消费-Redux / Zustand / MobX / Jotai」
+> - Vue 项目 → 阅读「路由配置-Vue」「获取参数-Vue 2/3」「状态管理-Vuex / Pinia」「组件消费-Vuex / Pinia」
+> - Next.js → 在 React 基础上追加「获取参数-Next.js App/Pages Router」
+> - 其他框架 → 按实际匹配选读
 
 ### 路由配置与跳转
 
