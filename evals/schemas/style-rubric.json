@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "用于评估 Agent 生成的前端项目代码质量和规范的评分量表",
+  "properties": {
+    "overall_pass": {
+      "type": "boolean",
+      "description": "所有核心检查项是否全部及格。如果存在严重的规范违背，请输出 false。"
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "代码质量的综合打分，满分为 100 分。轻微瑕疵扣 5-10 分，严重违规扣 20-50 分。"
+    },
+    "checks": {
+      "type": "array",
+      "description": "具体检查项的明细列表",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "检查项的标识符（例如在 prompt 中要求检查的 'tailwind_usage' 或 'functional_components'）。"
+          },
+          "pass": {
+            "type": "boolean",
+            "description": "该具体项是否完全符合规范要求。"
+          },
+          "notes": {
+            "type": "string",
+            "description": "给出的具体反馈。如果未通过（pass 为 false），必须详细指出违规发生的文件名、大概行号以及违规的具体表现（例如：'在 Header.tsx 中发现了内联的 style 属性'）。如果通过，可简写为 '符合要求'。"
+          }
+        },
+        "required": [
+          "id",
+          "pass",
+          "notes"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "overall_pass",
+    "score",
+    "checks"
+  ],
+  "additionalProperties": false
+}

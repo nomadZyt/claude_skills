@@ -1,0 +1,51 @@
+{
+  "overall_pass": true,
+  "score": 98,
+  "checks": [
+    {
+      "id": "meta_completeness",
+      "pass": true,
+      "notes": "Meta 章节存在，8 个字段齐全（feature-name/需求类型/估计粒度/主模块路径/关联 Wiki 节点/涉及新接口/涉及路由变更/涉及全局状态变更）。feature-name 用反引号 kebab-case `bottom-sheet-voice-revamp`，与文件名一致。无空白字段，无 {...} 占位符。"
+    },
+    {
+      "id": "upstream_artifacts_table",
+      "pass": true,
+      "notes": "上游产物摘要章节存在，4 行齐全（CLAUDE.md / .claude/AI_RULES.md / wiki/index.json / wiki/glossary.md）。状态均为「已加载」，备注列含技术栈摘要、红线条数（5 条）、命中节点数（2 个）、命中术语数（5 个）等有意义信息。"
+    },
+    {
+      "id": "six_section_completeness",
+      "pass": true,
+      "notes": "存在两个二级子需求章节（一、二），每个均含背景/现状问题/改造方案/验收标准/受影响文件/参考代码六段，无空段。背景章节命中\"突兀\"、\"话筒按钮\"、\"自动开始监听\"、\"关闭\"等用户原始描述关键词。"
+    },
+    {
+      "id": "acceptance_observable",
+      "pass": true,
+      "notes": "两个子需求验收标准均为可观察行为：状态机切换断言、spy 调用次数、DOM 属性 data-voice-state、isRecording() 返回 false、cleanup 路径可测。明确禁止\"体验更好\"主观描述，无模糊用语。"
+    },
+    {
+      "id": "global_constraints_inheritance",
+      "pass": true,
+      "notes": "全局约束章节存在，「来自 AI_RULES.md 的红线」继承 4 条具体红线（网络请求/样式/组件/资源生命周期），非泛泛引用。「本需求特有约束」明确引用 wiki/nodes/component.bottom-sheet.md 的 Legacy Constraints，列举 4 条具体条款。"
+    },
+    {
+      "id": "wiki_node_utilization",
+      "pass": true,
+      "notes": "Meta 关联 Wiki 节点填了具体节点 ID `component.bottom-sheet`、`page.voice-assistant`。受影响文件包含 BottomSheet/index.tsx、voice.ts 等候选 key_files。Legacy Constraints 引用了\"自动开始监听\"、\"关闭时未停止\"、\"话筒装饰态\"等具体条款。"
+    },
+    {
+      "id": "no_spillover_artifacts",
+      "pass": true,
+      "notes": ".test-workspace/docs/tasks/ 不存在，.test-workspace/src/ 不存在，根目录仅 CLAUDE.md（init 产物，非本 Skill 新增）。无溢出产物。"
+    },
+    {
+      "id": "placeholder_fidelity",
+      "pass": true,
+      "notes": "grep 检测无 {feature-name} / {path} / {...} 等未替换占位符。"
+    },
+    {
+      "id": "delivery_notes",
+      "pass": true,
+      "notes": "交付说明章节存在，含 commit 切分（一子需求一 commit，共 2 个）和具体 commit 前缀 refactor(bottom-sheet) / fix(bottom-sheet)，并包含兼容性验证说明。待补充信息 (TODO) 章节存在，含 3 条具体待确认项，标题未省略。"
+    }
+  ]
+}

@@ -34,11 +34,20 @@ echo ""
 
 REQUIRED_FIELDS="契约 关键决策 变更文件 关联_commit 依赖 被依赖 回滚"
 
+# 提取单个 Task 的 Markdown 块：从 `* [x] **Tn**` / `- [x] **Tn**` 起到下一同类 Task 标题前（不含下一标题）
+extract_task_block() {
+  local tid="$1"
+  echo "$PLAN_CONTENT" | awk -v tid="$tid" '
+    ($0 ~ /^\* \[x\]/ || $0 ~ /^- \[x\]/) && $0 ~ ("\\*\\*" tid "\\*\\*") { f=1 }
+    f && ($0 ~ /^\* \[x\]/ || $0 ~ /^- \[x\]/) && $0 ~ /\*\*T[0-9]/ && $0 !~ ("\\*\\*" tid "\\*\\*") { exit }
+    f
+  '
+}
+
 for TASK_ID in $COMPLETED_TASKS; do
   echo "── $TASK_ID ──"
 
-  # 提取 Task 区块：从 [x] **TaskID** 到下一个 "- [" 行
-  TASK_BLOCK=$(echo "$PLAN_CONTENT" | awk "/\[x\].*\*\*${TASK_ID}\*\*/,/^- \[/" || true)
+  TASK_BLOCK=$(extract_task_block "$TASK_ID")
 
   # 检查 1: <details> 区块是否存在
   if ! echo "$TASK_BLOCK" | grep -q '<details>' 2>/dev/null; then
@@ -102,18 +111,19 @@ done
 # 检查 5: 依赖双向一致性
 echo "── 依赖一致性检查 ──"
 for TASK_ID in $COMPLETED_TASKS; do
-  TASK_BLOCK=$(echo "$PLAN_CONTENT" | awk "/\[x\].*\*\*${TASK_ID}\*\*/,/^- \[/" || true)
+  TASK_BLOCK=$(extract_task_block "$TASK_ID")
   DEP_LINE=$(echo "$TASK_BLOCK" | grep '\*\*依赖：\*\*' | grep -v '被依赖' | sed 's/.*\*\*依赖：\*\*[[:space:]]*//' || true)
 
   if [[ -n "$DEP_LINE" && "$DEP_LINE" != "无" && ! "$DEP_LINE" =~ ^\{.*\}$ ]]; then
     DEP_IDS=$(echo "$DEP_LINE" | grep -oE 'T[0-9]+' || true)
     for DEP_ID in $DEP_IDS; do
-      DEP_BLOCK=$(echo "$PLAN_CONTENT" | awk "/\*\*${DEP_ID}\*\*/,/^- \[/" || true)
+      [[ -n "$DEP_ID" ]] || continue
+      DEP_BLOCK=$(extract_task_block "$DEP_ID")
       BLOCKED_BY=$(echo "$DEP_BLOCK" | grep '\*\*被依赖：\*\*' || true)
       if [[ -n "$BLOCKED_BY" ]] && echo "$BLOCKED_BY" | grep -q "$TASK_ID"; then
-        pass "依赖一致: $TASK_ID 依赖 $DEP_ID，$DEP_ID 的被依赖包含 $TASK_ID"
+        pass "依赖一致: ${TASK_ID} 依赖 ${DEP_ID}，${DEP_ID} 的被依赖包含 ${TASK_ID}"
       else
-        warn "依赖不一致: $TASK_ID 声明依赖 $DEP_ID，但 $DEP_ID 的被依赖中未包含 $TASK_ID"
+        warn "依赖不一致: ${TASK_ID} 声明依赖 ${DEP_ID}，但 ${DEP_ID} 的被依赖中未包含 ${TASK_ID}"
       fi
     done
   fi

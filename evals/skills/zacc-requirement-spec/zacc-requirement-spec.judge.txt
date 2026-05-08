@@ -1,0 +1,50 @@
+请根据以下标准严格评估 .test-workspace/docs/requirements/bottom-sheet-voice-revamp.md 的质量。本 Skill 属于"需求文档生成引擎"，产物是下游 zacc-task-spec 的契约输入，一字之差影响规划正确性。
+
+1. meta_completeness（Meta 机读表格完整性）：
+   - 是否存在 `## 元数据 (Meta)` 章节
+   - 表格是否含 8 个字段：feature-name / 需求类型 / 估计粒度 / 主模块路径 / 关联 Wiki 节点 / 涉及新接口 / 涉及路由变更 / 涉及全局状态变更
+   - feature-name 是否用反引号 kebab-case（如 `bottom-sheet-voice-revamp`），值是否与文件名一致
+   - 未知字段是否显式填 `unknown` 或 `TBD` 而非留空或保留 `{...}` 占位符
+
+2. upstream_artifacts_table（上游产物摘要完整性）：
+   - 是否存在 `## 上游产物摘要` 章节
+   - 表格是否覆盖 4 行：CLAUDE.md / .claude/AI_RULES.md / wiki/index.json / wiki/glossary.md
+   - 每行状态是否明确为「已加载」或「未找到」
+   - 备注列是否包含有意义信息（技术栈摘要 / 红线条数 / 命中节点 ID 等），而非空白或占位
+
+3. six_section_completeness（子需求六段式完整性）：
+   - 是否存在至少一个 `## 一、{子需求标题}` 二级章节
+   - 该章节下是否 6 段齐全：背景 / 现状问题 / 改造方案 / 验收标准 / 受影响文件 / 参考代码
+   - 每段是否有实际内容，不能只有标题空段
+   - 「背景」是否保留了用户原始描述（语音交互默认开始听 / 突兀 / 话筒按钮 / 关闭时停止等关键词至少命中 1 个）
+
+4. acceptance_observable（验收标准可观察性）：
+   - 「验收标准」条目是否全部为可测试的行为描述（如"点击话筒按钮后开始录音"、"BottomSheet 关闭时 isListening=false"）
+   - 是否出现"体验更好"、"更流畅"、"合理"、"友好"等主观模糊描述（应扣分）
+   - 条目是否可通过人工或自动化二值判定
+
+5. global_constraints_inheritance（全局约束继承）：
+   - 是否存在 `## 全局约束` 章节
+   - 是否有「来自 AI_RULES.md 的红线」子段，并至少继承 1 条实际红线条目（而非仅"遵循 AI_RULES.md"一句话）
+   - 是否有「本需求特有约束」子段，且引用了 wiki/nodes/component.bottom-sheet.md 的 Legacy Constraints
+
+6. wiki_node_utilization（Wiki 命中节点利用率）：
+   - Meta「关联 Wiki 节点」是否填了具体节点 ID（如 `component.bottom-sheet`），而非 `unknown`
+   - 「受影响文件」是否包含 wiki 节点 key_files 的候选项
+   - 是否引用了 Legacy Constraints 中的具体条款（不是泛泛提到"有历史包袱"）
+
+7. no_spillover_artifacts（无溢出产物）：
+   - 检查 .test-workspace/docs/tasks/ 是否为空或不存在（该目录是下游 zacc-task-spec 职责，本 Skill 不得产出）
+   - 检查 .test-workspace/src/ 是否未被创建（本 Skill 不改代码）
+   - 检查 .test-workspace/ 根目录未新增本 Skill 职责外的 md 文件（如 README、CHANGELOG）
+
+8. placeholder_fidelity（占位符完整替换）：
+   - 文档中不应保留形如 `{feature-name}` / `{path}` / `{...}` 的未替换占位符
+   - 如检测到 `{xxx}` 模式出现 2 次以上视为严重违规
+
+9. delivery_notes（交付说明与 TODO 完整性）：
+   - 是否存在 `## 交付说明` 章节
+   - 是否含 commit 切分建议和 commit 前缀（如 `feat(component)` / `refactor(bottom-sheet)`）
+   - 是否存在 `## 待补充信息 (TODO)` 章节；即使无条目也应显式写「无」而非省略标题
+
+输出必须严格符合 style-rubric.json Schema：overall_pass / score / checks[{id, pass, notes}]。仅输出合法 JSON，不包含 Markdown 或解释。
